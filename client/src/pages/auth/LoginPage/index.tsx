@@ -22,6 +22,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useUIStore } from '@/stores/uiStore';
 import type { LoginData } from '@/types';
 import toast from 'react-hot-toast';
+import logoImage from '@/assets/images/logo.png';
 
 const loginSchema = yup.object({
   email: yup
@@ -92,6 +93,20 @@ const LoginPage: React.FC = () => {
     >
       <Card sx={{ maxWidth: 440, width: '100%', borderRadius: 3, boxShadow: 4 }}>
         <CardContent sx={{ p: { xs: 3, md: 5 } }}>
+          {/* Logo */}
+          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+            <Box
+              component="img"
+              src={logoImage}
+              alt="Finance App Logo"
+              sx={{
+                height: 64,
+                width: 'auto',
+                objectFit: 'contain',
+              }}
+            />
+          </Box>
+
           {/* Header with theme toggle */}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
             <Box>

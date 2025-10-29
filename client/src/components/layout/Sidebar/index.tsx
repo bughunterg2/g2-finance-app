@@ -37,6 +37,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { useUIStore } from '@/stores/uiStore';
 import { useReimbursementStore } from '@/stores/reimbursementStore';
+import logoImage from '@/assets/images/logo.png';
 
 interface MenuItem {
   id: string;
@@ -288,10 +289,33 @@ const Sidebar: React.FC = () => {
           minHeight: 64,
         }}
       >
-        {!sidebarCollapsed && (
-          <Typography variant="h6" fontWeight="bold" color="primary">
-            Finance App
-          </Typography>
+        {!sidebarCollapsed ? (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Box
+              component="img"
+              src={logoImage}
+              alt="Finance App Logo"
+              sx={{
+                height: 32,
+                width: 'auto',
+                objectFit: 'contain',
+              }}
+            />
+            <Typography variant="h6" fontWeight="bold" color="primary">
+              Finance App
+            </Typography>
+          </Box>
+        ) : (
+          <Box
+            component="img"
+            src={logoImage}
+            alt="Finance App Logo"
+            sx={{
+              height: 32,
+              width: 32,
+              objectFit: 'contain',
+            }}
+          />
         )}
         {!isMobile && (
           <IconButton onClick={toggleSidebar}>

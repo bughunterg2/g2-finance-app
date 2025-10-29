@@ -2,6 +2,7 @@ import React from 'react';
 import { AppBar, Toolbar, Typography, IconButton, Box, Badge as MuiBadge, Menu, MenuItem, ListItemText } from '@mui/material';
 import { Menu as MenuIcon, Notifications as NotificationsIcon, DarkMode as DarkModeIcon, LightMode as LightModeIcon } from '@mui/icons-material';
 import { useUIStore } from '@/stores/uiStore';
+import logoImage from '@/assets/images/logo.png';
 
 interface HeaderProps {
   title?: string;
@@ -47,6 +48,19 @@ const Header: React.FC<HeaderProps> = ({ title, onMenuClick }) => {
         >
           <MenuIcon />
         </IconButton>
+        
+        <Box
+          component="img"
+          src={logoImage}
+          alt="Finance App Logo"
+          sx={{
+            height: 28,
+            width: 'auto',
+            objectFit: 'contain',
+            mr: 1.5,
+            display: { xs: 'none', sm: 'block' },
+          }}
+        />
         
         {title && (
           <Typography variant="h6" component="div" sx={{ mr: 2 }}>

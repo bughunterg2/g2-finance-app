@@ -67,6 +67,21 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <>{children}</>;
 };
 
+// Root Redirect Component
+const RootRedirect: React.FC = () => {
+  const { isAuthenticated, user } = useAuthStore();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user?.role === 'admin') {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
+
+  return <Navigate to="/dashboard" replace />;
+};
+
 const AppRouter: React.FC = () => {
   return (
     <BrowserRouter>
@@ -279,7 +294,7 @@ const AppRouter: React.FC = () => {
           />
 
           {/* Default Redirects */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/" element={<RootRedirect />} />
           <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
           
           {/* 404 Route */}

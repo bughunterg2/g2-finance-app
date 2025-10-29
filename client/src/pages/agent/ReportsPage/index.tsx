@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, Typography, Card as MuiCard, CardContent, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import PageHeader from '@/components/layout/PageHeader';
 import { useAuthStore } from '@/stores/authStore';
 import { useReimbursementStore } from '@/stores/reimbursementStore';
@@ -19,7 +18,6 @@ import {
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Tooltip, Legend);
 
 const AgentReportsPage: React.FC = () => {
-  const navigate = useNavigate();
   const { user } = useAuthStore();
   const { reimbursements } = useReimbursementStore();
 

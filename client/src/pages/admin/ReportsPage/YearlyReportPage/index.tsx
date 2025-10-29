@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Card as MuiCard, CardContent, Button, Chip, FormControl, InputLabel, Select, MenuItem, Grid } from '@mui/material';
+import { Box, Typography, Card as MuiCard, CardContent, Button, Chip, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import PageHeader from '@/components/layout/PageHeader';
 import { useReimbursementStore } from '@/stores/reimbursementStore';
 import { Bar, Doughnut } from 'react-chartjs-2';
@@ -114,24 +114,20 @@ const YearlyReportPage: React.FC = () => {
         </CardContent>
       </MuiCard>
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <MuiCard>
-            <CardContent>
-              <Typography variant="h6" fontWeight="bold" gutterBottom>Category Share {prevYear}</Typography>
-              <Doughnut data={{ labels: pShare.labels, datasets: [{ data: pShare.data, backgroundColor: ['#60a5fa','#22c55e','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#84cc16','#ec4899','#6b7280'] }] }} />
-            </CardContent>
-          </MuiCard>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <MuiCard>
-            <CardContent>
-              <Typography variant="h6" fontWeight="bold" gutterBottom>Category Share {year}</Typography>
-              <Doughnut data={{ labels: yShare.labels, datasets: [{ data: yShare.data, backgroundColor: ['#60a5fa','#22c55e','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#84cc16','#ec4899','#6b7280'] }] }} />
-            </CardContent>
-          </MuiCard>
-        </Grid>
-      </Grid>
+      <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' } }}>
+        <MuiCard>
+          <CardContent>
+            <Typography variant="h6" fontWeight="bold" gutterBottom>Category Share {prevYear}</Typography>
+            <Doughnut data={{ labels: pShare.labels, datasets: [{ data: pShare.data, backgroundColor: ['#60a5fa','#22c55e','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#84cc16','#ec4899','#6b7280'] }] }} />
+          </CardContent>
+        </MuiCard>
+        <MuiCard>
+          <CardContent>
+            <Typography variant="h6" fontWeight="bold" gutterBottom>Category Share {year}</Typography>
+            <Doughnut data={{ labels: yShare.labels, datasets: [{ data: yShare.data, backgroundColor: ['#60a5fa','#22c55e','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#84cc16','#ec4899','#6b7280'] }] }} />
+          </CardContent>
+        </MuiCard>
+      </Box>
     </Box>
   );
 };

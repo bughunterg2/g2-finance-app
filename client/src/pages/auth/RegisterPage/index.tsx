@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -43,23 +43,20 @@ const registerSchema = yup.object({
     .string()
     .oneOf(['admin', 'agent'], 'Please select a valid role')
     .required('Role is required'),
-  department: yup
+  division: yup
     .string()
-    .min(2, 'Department must be at least 2 characters')
-    .required('Department is required'),
+    .min(2, 'Division must be at least 2 characters')
+    .required('Division is required'),
 });
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const { register: registerUser, isLoading, error, clearError } = useAuthStore();
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
   } = useForm<RegisterData & { confirmPassword: string }>({
     resolver: yupResolver(registerSchema),
     defaultValues: {
@@ -68,7 +65,7 @@ const RegisterPage: React.FC = () => {
       confirmPassword: '',
       name: '',
       role: 'agent',
-      department: '',
+      division: '',
     },
   });
 
@@ -162,11 +159,11 @@ const RegisterPage: React.FC = () => {
             </FormControl>
 
             <TextField
-              {...register('department')}
+              {...register('division')}
               fullWidth
-              label="Department"
-              error={!!errors.department}
-              helperText={errors.department?.message}
+              label="Division"
+              error={!!errors.division}
+              helperText={errors.division?.message}
               sx={{ mb: 2 }}
               autoComplete="organization"
             />
@@ -175,7 +172,7 @@ const RegisterPage: React.FC = () => {
               {...register('password')}
               fullWidth
               label="Password"
-              type={showPassword ? 'text' : 'password'}
+              type="password"
               error={!!errors.password}
               helperText={errors.password?.message}
               sx={{ mb: 2 }}
@@ -186,7 +183,7 @@ const RegisterPage: React.FC = () => {
               {...register('confirmPassword')}
               fullWidth
               label="Confirm Password"
-              type={showConfirmPassword ? 'text' : 'password'}
+              type="password"
               error={!!errors.confirmPassword}
               helperText={errors.confirmPassword?.message}
               sx={{ mb: 3 }}

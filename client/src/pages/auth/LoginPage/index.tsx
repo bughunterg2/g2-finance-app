@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -39,7 +39,6 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { login, isLoading, error, clearError } = useAuthStore();
   const { theme, toggleTheme } = useUIStore();
-  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -133,7 +132,7 @@ const LoginPage: React.FC = () => {
               {...register('password')}
               fullWidth
               label="Password"
-              type={showPassword ? 'text' : 'password'}
+              type="password"
               error={!!errors.password}
               helperText={errors.password?.message}
               sx={{ mb: 2 }}

@@ -1,16 +1,14 @@
 import React from 'react';
-import { Box, Typography, Button, Card as MuiCard, CardContent, TextField, FormControl, InputLabel, Select, MenuItem, Chip, IconButton } from '@mui/material';
+import { Box, Typography, Button, Card as MuiCard, CardContent, TextField, FormControl, InputLabel, Select, MenuItem, Chip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '@/components/layout/PageHeader';
 import { useCategoryStore } from '@/stores/categoryStore';
 import { useReimbursementStore } from '@/stores/reimbursementStore';
-import { useAuthStore } from '@/stores/authStore';
 import toast from 'react-hot-toast';
-import { Add as AddIcon, Delete as DeleteIcon, AttachFile as AttachFileIcon } from '@mui/icons-material';
+import { Delete as DeleteIcon, AttachFile as AttachFileIcon } from '@mui/icons-material';
 
 const NewReimbursementPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuthStore();
   const { categories, fetchCategories } = useCategoryStore();
   const { createReimbursement } = useReimbursementStore();
 
@@ -67,6 +65,7 @@ const NewReimbursementPage: React.FC = () => {
         categoryId: form.categoryId,
         transactionDate: new Date(form.transactionDate),
         currency: 'IDR',
+        attachments: form.attachments,
       });
       toast.success('Reimbursement created successfully!');
       navigate('/reimbursements');
@@ -158,7 +157,7 @@ const NewReimbursementPage: React.FC = () => {
               <Box>
                 <Typography variant="subtitle2" gutterBottom>Attachments</Typography>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-                  {form.attachments.map((url, index) => (
+                  {form.attachments.map((_url, index) => (
                     <Chip
                       key={index}
                       label={`File ${index + 1}`}

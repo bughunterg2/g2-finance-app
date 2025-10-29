@@ -18,7 +18,7 @@ interface CategoryActions {
 }
 
 export const useCategoryStore = create<CategoryState & CategoryActions>()(
-  (set, get) => ({
+  (set) => ({
     // State
     categories: [],
     isLoading: false,

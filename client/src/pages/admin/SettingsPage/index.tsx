@@ -3,10 +3,8 @@ import {
   Box,
   Typography,
   Card,
-  CardContent,
   Tabs,
   Tab,
-  Grid,
   FormControl,
   FormLabel,
   RadioGroup,
@@ -17,7 +15,6 @@ import {
   Button,
   Divider,
   Alert,
-  Snackbar,
 } from '@mui/material';
 import {
   Palette as PaletteIcon,
@@ -52,7 +49,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const AdminSettingsPage: React.FC = () => {
-  const { theme, setTheme, notifications, clearNotifications } = useUIStore();
+  const { setTheme, notifications, clearNotifications } = useUIStore();
   const { settings: savedSettings, setSettings: saveSettings, resetDefaults } = useSettingsStore();
   const [tabValue, setTabValue] = useState(0);
   const [settings, setSettings] = useState(savedSettings);
@@ -61,7 +58,7 @@ const AdminSettingsPage: React.FC = () => {
     setSettings(savedSettings);
   }, [savedSettings]);
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
@@ -132,21 +129,19 @@ const AdminSettingsPage: React.FC = () => {
         </Box>
 
         <TabPanel value={tabValue} index={0}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <FormControl component="fieldset">
-                <FormLabel component="legend">Theme</FormLabel>
-                <RadioGroup
-                  value={settings.theme}
-                  onChange={(e) => handleSettingChange('theme', e.target.value)}
-                >
-                  <FormControlLabel value="light" control={<Radio />} label="Light" />
-                  <FormControlLabel value="dark" control={<Radio />} label="Dark" />
-                  <FormControlLabel value="auto" control={<Radio />} label="Auto (System)" />
-                </RadioGroup>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} md={6}>
+          <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' } }}>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">Theme</FormLabel>
+              <RadioGroup
+                value={settings.theme}
+                onChange={(e) => handleSettingChange('theme', e.target.value)}
+              >
+                <FormControlLabel value="light" control={<Radio />} label="Light" />
+                <FormControlLabel value="dark" control={<Radio />} label="Dark" />
+                <FormControlLabel value="auto" control={<Radio />} label="Auto (System)" />
+              </RadioGroup>
+            </FormControl>
+            <Box>
               <Typography variant="h6" gutterBottom>
                 Preview
               </Typography>
@@ -162,63 +157,61 @@ const AdminSettingsPage: React.FC = () => {
                   This is how your interface will look with the selected theme.
                 </Typography>
               </Box>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </TabPanel>
 
         <TabPanel value={tabValue} index={1}>
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <Typography variant="h6" gutterBottom>
-                Notification Preferences
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings.notifications.email}
-                      onChange={(e) => handleNestedSettingChange('notifications', 'email', e.target.checked)}
-                    />
-                  }
-                  label="Email Notifications"
-                />
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings.notifications.push}
-                      onChange={(e) => handleNestedSettingChange('notifications', 'push', e.target.checked)}
-                    />
-                  }
-                  label="Push Notifications"
-                />
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Notification Preferences
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={settings.notifications.email}
+                    onChange={(e) => handleNestedSettingChange('notifications', 'email', e.target.checked)}
+                  />
+                }
+                label="Email Notifications"
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={settings.notifications.push}
+                    onChange={(e) => handleNestedSettingChange('notifications', 'push', e.target.checked)}
+                  />
+                }
+                label="Push Notifications"
+              />
+            </Box>
+            
+            <Divider sx={{ my: 3 }} />
+            
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Box>
+                <Typography variant="h6" gutterBottom>
+                  Current Notifications
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  You have {notifications.length} unread notifications
+                </Typography>
               </Box>
-              
-              <Divider sx={{ my: 3 }} />
-              
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Box>
-                  <Typography variant="h6" gutterBottom>
-                    Current Notifications
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    You have {notifications.length} unread notifications
-                  </Typography>
-                </Box>
-                <Button 
-                  variant="outlined" 
-                  onClick={clearNotifications}
-                  disabled={notifications.length === 0}
-                >
-                  Clear All
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
+              <Button 
+                variant="outlined" 
+                onClick={clearNotifications}
+                disabled={notifications.length === 0}
+              >
+                Clear All
+              </Button>
+            </Box>
+          </Box>
         </TabPanel>
 
         <TabPanel value={tabValue} index={2}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+          <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' } }}>
+            <Box>
               <Typography variant="h6" gutterBottom>
                 Security Settings
               </Typography>
@@ -241,16 +234,16 @@ const AdminSettingsPage: React.FC = () => {
                   helperText="Automatically log out after inactivity"
                 />
               </Box>
-            </Grid>
-            <Grid item xs={12} md={6}>
+            </Box>
+            <Box>
               <Alert severity="info">
                 <Typography variant="body2">
                   Security settings help protect your account and data. 
                   Enable two-factor authentication for enhanced security.
                 </Typography>
               </Alert>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </TabPanel>
 
         

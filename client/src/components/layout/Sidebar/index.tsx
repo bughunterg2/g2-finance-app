@@ -22,10 +22,8 @@ import {
   Dashboard as DashboardIcon,
   Receipt as ReceiptIcon,
   Assessment as AssessmentIcon,
-  AttachMoney as AttachMoneyIcon,
+  Summarize as SummarizeIcon,
   Person as PersonIcon,
-  Category as CategoryIcon,
-  People as PeopleIcon,
   Settings as SettingsIcon,
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
@@ -36,7 +34,7 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { useUIStore } from '@/stores/uiStore';
-import { useReimbursementStore } from '@/stores/reimbursementStore';
+import { useSpreadsheetStore } from '@/stores/spreadsheetStore';
 import logoImage from '@/assets/images/logo.png';
 
 interface MenuItem {
@@ -61,12 +59,7 @@ const Sidebar: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  // Derive dynamic counts
-  const { reimbursements } = useReimbursementStore();
-  const pendingAll = React.useMemo(
-    () => reimbursements.filter(r => r.status === 'pending').length,
-    [reimbursements]
-  );
+  const { tables } = useSpreadsheetStore();
   // const pendingMine = React.useMemo(
   //   () => reimbursements.filter(r => r.status === 'pending' && r.agentId === user?.uid).length,
   //   [reimbursements, user?.uid]
@@ -82,76 +75,24 @@ const Sidebar: React.FC = () => {
           icon: <DashboardIcon />,
           path: '/admin/dashboard',
         },
+        
         {
-          id: 'reimbursements',
-          label: 'Reimbursements',
-          icon: <ReceiptIcon />,
-          path: '/admin/reimbursements',
-          badge: pendingAll || undefined,
-          submenu: [
-            {
-              id: 'reimbursements-blokm',
-              label: 'Blok M',
-              path: '/admin/reimbursements?site=blokm',
-              icon: <ReceiptIcon />,
-            },
-            {
-              id: 'reimbursements-pejaten',
-              label: 'Pejaten',
-              path: '/admin/reimbursements?site=pejaten',
-              icon: <ReceiptIcon />,
-            },
-          ],
+          id: 'spreadsheets',
+          label: 'Spreadsheets',
+          icon: <AssessmentIcon />, // reuse icon
+          path: '/admin/spreadsheets',
+          submenu: tables.map(t => ({
+            id: `sheet-${t.id}`,
+            label: t.title,
+            path: `/admin/spreadsheets/${t.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')}`,
+            icon: <AssessmentIcon />,
+          })),
         },
         {
-          id: 'categories',
-          label: 'Categories',
-          icon: <CategoryIcon />,
-          path: '/admin/categories',
-        },
-        {
-          id: 'income',
-          label: 'Income',
-          icon: <AttachMoneyIcon />,
-          path: '/admin/income',
-        },
-        {
-          id: 'users',
-          label: 'Users',
-          icon: <PeopleIcon />,
-          path: '/admin/users',
-        },
-        {
-          id: 'reports',
-          label: 'Reports',
-          icon: <AssessmentIcon />,
-          path: '/admin/reports',
-          submenu: [
-            {
-              id: 'income-report',
-              label: 'Income Report',
-              path: '/admin/reports/income',
-              icon: <AssessmentIcon />,
-            },
-            {
-              id: 'expense-report',
-              label: 'Expense Report',
-              path: '/admin/reports/expense',
-              icon: <AssessmentIcon />,
-            },
-            {
-              id: 'monthly-report',
-              label: 'Monthly Report',
-              path: '/admin/reports/monthly',
-              icon: <AssessmentIcon />,
-            },
-            {
-              id: 'yearly-report',
-              label: 'Yearly Report',
-              path: '/admin/reports/yearly',
-              icon: <AssessmentIcon />,
-            },
-          ],
+          id: 'spreadsheets-summary',
+          label: 'Summary',
+          icon: <SummarizeIcon />,
+          path: '/admin/spreadsheets/summary',
         },
         {
           id: 'settings',
@@ -209,16 +150,23 @@ const Sidebar: React.FC = () => {
     }
   };
 
-  const handleSubmenuToggle = (menuId: string) => {
-    setExpandedMenus(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(menuId)) {
-        newSet.delete(menuId);
-      } else {
-        newSet.add(menuId);
-      }
-      return newSet;
-    });
+  const handleParentMenuClick = (item: MenuItem) => {
+    // Always navigate to parent path and expand submenu if present
+    navigate(item.path);
+    if (item.submenu && item.submenu.length > 0) {
+      setExpandedMenus(prev => {
+        const newSet = new Set(prev);
+        if (newSet.has(item.id)) {
+          newSet.delete(item.id); // toggle close
+        } else {
+          newSet.add(item.id); // toggle open
+        }
+        return newSet;
+      });
+    }
+    if (isMobile) {
+      toggleSidebar();
+    }
   };
 
   const isMenuExpanded = (menuId: string) => expandedMenus.has(menuId);
@@ -331,12 +279,12 @@ const Sidebar: React.FC = () => {
         {menuItems.map((item) => (
           <React.Fragment key={item.id}>
             <ListItem disablePadding>
-              <ListItemButton
-                onClick={() => item.submenu ? handleSubmenuToggle(item.id) : handleMenuClick(item.path)}
-                selected={isActivePath(item.path)}
+            <ListItemButton
+              onClick={() => (item.submenu && item.submenu.length > 0) ? handleParentMenuClick(item) : handleMenuClick(item.path)}
+                selected={(item.submenu && item.submenu.length > 0) ? isActivePathStrict(item.path) : isActivePathStrict(item.path)}
                 aria-haspopup={item.submenu ? 'true' : undefined}
-                aria-expanded={item.submenu ? isMenuExpanded(item.id) : undefined}
-                aria-controls={item.submenu ? `${item.id}-submenu` : undefined}
+              aria-expanded={(item.submenu && item.submenu.length > 0) ? isMenuExpanded(item.id) : undefined}
+              aria-controls={(item.submenu && item.submenu.length > 0) ? `${item.id}-submenu` : undefined}
                 sx={{
                   minHeight: 48,
                   justifyContent: sidebarCollapsed ? 'center' : 'initial',
@@ -385,7 +333,7 @@ const Sidebar: React.FC = () => {
                         fontWeight: 500,
                       }}
                     />
-                    {item.submenu && (
+                    {(item.submenu && item.submenu.length > 0) && (
                       <Box sx={{ ml: 1 }}>
                         {isMenuExpanded(item.id) ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                       </Box>
@@ -396,7 +344,7 @@ const Sidebar: React.FC = () => {
             </ListItem>
 
             {/* Submenu */}
-            {!sidebarCollapsed && item.submenu && (
+            {!sidebarCollapsed && item.submenu && item.submenu.length > 0 && (
               <Collapse in={isMenuExpanded(item.id)} timeout="auto" unmountOnExit>
                 <List sx={{ pl: 2 }} id={`${item.id}-submenu`} role="group" aria-label={`${item.label} submenu`}>
                   {item.submenu.map((subItem) => (

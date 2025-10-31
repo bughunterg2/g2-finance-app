@@ -17,16 +17,11 @@ const AgentProfilePage = React.lazy(() => import('@/pages/agent/ProfilePage'));
 
 // Admin Pages
 const AdminDashboardPage = React.lazy(() => import('@/pages/admin/DashboardPage'));
-const AdminReimbursementsPage = React.lazy(() => import('@/pages/admin/ReimbursementsPage'));
-const AdminCategoriesPage = React.lazy(() => import('@/pages/admin/CategoriesPage'));
-const AdminUsersPage = React.lazy(() => import('@/pages/admin/UsersPage'));
-const AdminReportsPage = React.lazy(() => import('@/pages/admin/ReportsPage'));
-const IncomeReportPage = React.lazy(() => import('@/pages/admin/ReportsPage/IncomeReportPage'));
-const ExpenseReportPage = React.lazy(() => import('@/pages/admin/ReportsPage/ExpenseReportPage'));
-const MonthlyReportPage = React.lazy(() => import('@/pages/admin/ReportsPage/MonthlyReportPage'));
-const YearlyReportPage = React.lazy(() => import('@/pages/admin/ReportsPage/YearlyReportPage'));
+const AdminSpreadsheetsPage = React.lazy(() => import('@/pages/admin/SpreadsheetsPage'));
+const SpreadsheetEditorPage = React.lazy(() => import('@/pages/admin/SpreadsheetEditorPage'));
 const AdminSettingsPage = React.lazy(() => import('@/pages/admin/SettingsPage'));
-const AdminIncomePage = React.lazy(() => import('@/pages/admin/IncomePage'));
+const SpreadsheetSummaryPage = React.lazy(() => import('@/pages/admin/SpreadsheetSummaryPage'));
+const ReactSpreadsheetsPage = React.lazy(() => import('@/pages/admin/ReactSpreadsheetsPage'));
 
 // Loading Component
 const LoadingFallback: React.FC = () => (
@@ -173,101 +168,41 @@ const AppRouter: React.FC = () => {
             }
           />
           <Route
-            path="/admin/reimbursements"
+            path="/admin/spreadsheets"
             element={
               <ProtectedRoute roles={['admin']}>
-                <AppLayout title="All Reimbursements">
-                  <AdminReimbursementsPage />
+                <AppLayout title="Spreadsheets">
+                  <AdminSpreadsheetsPage />
                 </AppLayout>
               </ProtectedRoute>
             }
           />
           <Route
-            path="/admin/reimbursements/:id"
+            path="/admin/react-spreadsheets"
             element={
               <ProtectedRoute roles={['admin']}>
-                <AppLayout title="Reimbursement Details">
-                  <ReimbursementDetailPage />
+                <AppLayout title="React Spreadsheets">
+                  <ReactSpreadsheetsPage />
                 </AppLayout>
               </ProtectedRoute>
             }
           />
           <Route
-            path="/admin/categories"
+            path="/admin/spreadsheets/summary"
             element={
               <ProtectedRoute roles={['admin']}>
-                <AppLayout title="Categories">
-                  <AdminCategoriesPage />
+                <AppLayout title="Spreadsheet Summary">
+                  <SpreadsheetSummaryPage />
                 </AppLayout>
               </ProtectedRoute>
             }
           />
           <Route
-            path="/admin/users"
+            path="/admin/spreadsheets/:id"
             element={
               <ProtectedRoute roles={['admin']}>
-                <AppLayout title="Users">
-                  <AdminUsersPage />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/income"
-            element={
-              <ProtectedRoute roles={['admin']}>
-                <AppLayout title="Income">
-                  <AdminIncomePage />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/reports"
-            element={
-              <ProtectedRoute roles={['admin']}>
-                <AppLayout title="Reports">
-                  <AdminReportsPage />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/reports/income"
-            element={
-              <ProtectedRoute roles={['admin']}>
-                <AppLayout title="Income Report">
-                  <IncomeReportPage />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/reports/expense"
-            element={
-              <ProtectedRoute roles={['admin']}>
-                <AppLayout title="Expense Report">
-                  <ExpenseReportPage />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/reports/monthly"
-            element={
-              <ProtectedRoute roles={['admin']}>
-                <AppLayout title="Monthly Report">
-                  <MonthlyReportPage />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/reports/yearly"
-            element={
-              <ProtectedRoute roles={['admin']}>
-                <AppLayout title="Yearly Report">
-                  <YearlyReportPage />
+                <AppLayout title="Spreadsheet Editor">
+                  <SpreadsheetEditorPage />
                 </AppLayout>
               </ProtectedRoute>
             }

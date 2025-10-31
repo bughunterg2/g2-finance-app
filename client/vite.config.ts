@@ -26,5 +26,34 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // React core libraries
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          // Material-UI
+          'mui-vendor': [
+            '@mui/material',
+            '@mui/icons-material',
+            '@emotion/react',
+            '@emotion/styled',
+          ],
+          // Firebase (split into smaller chunks)
+          'firebase-core': ['firebase/app'],
+          'firebase-auth': ['firebase/auth'],
+          'firebase-firestore': ['firebase/firestore'],
+          'firebase-storage': ['firebase/storage'],
+          'firebase-analytics': ['firebase/analytics'],
+          // Chart libraries
+          'chart-vendor': ['chart.js', 'react-chartjs-2'],
+          // Form libraries
+          'form-vendor': ['react-hook-form', '@hookform/resolvers', 'yup'],
+          // Other utilities
+          'utils-vendor': ['zustand', 'react-hot-toast'],
+        },
+      },
+    },
+    // Raise a bit to avoid noisy warnings while still catching outliers
+    chunkSizeWarningLimit: 1000,
   },
 });

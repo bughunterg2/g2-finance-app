@@ -4,7 +4,6 @@ import {
   Card as MuiCard,
   CardContent,
   Typography,
-  Button,
   List,
   ListItem,
   ListItemText,
@@ -15,9 +14,7 @@ import {
   Pending as PendingIcon,
   CheckCircle as CheckCircleIcon,
   Cancel as CancelIcon,
-  Assessment as AssessmentIcon,
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
 import { useReimbursementStore } from '@/stores/reimbursementStore';
 import { useAuthStore } from '@/stores/authStore';
 import PageHeader from '@/components/layout/PageHeader';
@@ -42,7 +39,7 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcEleme
 import { formatCurrency, formatDate } from '@/utils/format';
 
 const AdminDashboardPage: React.FC = () => {
-  const navigate = useNavigate();
+  
   const { user } = useAuthStore();
   const { 
     reimbursements, 
@@ -83,13 +80,7 @@ const AdminDashboardPage: React.FC = () => {
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 5);
 
-  const handleViewReimbursement = (id: string) => {
-    navigate(`/admin/reimbursements/${id}`);
-  };
-
-  const handleViewAllPending = () => {
-    navigate('/admin/reimbursements?status=pending');
-  };
+  
 
   if (isLoading) {
     return <LoadingSpinner size="large" />;
@@ -144,15 +135,6 @@ const AdminDashboardPage: React.FC = () => {
       <PageHeader
         title={`Welcome back, ${user?.name}!`}
         subtitle="Here's an overview of the reimbursement system"
-        actions={
-          <Button
-            variant="contained"
-            startIcon={<AssessmentIcon />}
-            onClick={() => navigate('/admin/reports')}
-          >
-            Generate Report
-          </Button>
-        }
       />
 
       {/* Stats Cards */}
@@ -217,7 +199,7 @@ const AdminDashboardPage: React.FC = () => {
           <CardContent>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
               <Typography variant="h6" fontWeight="bold">Pending Approvals</Typography>
-              <Button variant="outlined" size="small" onClick={handleViewAllPending}>View All</Button>
+              
             </Box>
           {pendingReimbursements.length === 0 ? (
             <EmptyState title="No pending approvals" description="All reimbursements have been processed" />
@@ -227,7 +209,7 @@ const AdminDashboardPage: React.FC = () => {
                 <ListItem
                   key={reimbursement.id}
                   component="div"
-                  onClick={() => handleViewReimbursement(reimbursement.id)}
+                  
                   sx={{
                     borderRadius: 1,
                     mb: 1,

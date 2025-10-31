@@ -1,15 +1,13 @@
 import React from 'react';
-import { Box, Typography, Button, Card as MuiCard, CardContent, TextField, FormControl, InputLabel, Select, MenuItem, Chip } from '@mui/material';
+import { Box, Typography, Button, Card as MuiCard, CardContent, TextField, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '@/components/layout/PageHeader';
-import { useCategoryStore } from '@/stores/categoryStore';
 import { useReimbursementStore } from '@/stores/reimbursementStore';
 import toast from 'react-hot-toast';
 import { Delete as DeleteIcon, AttachFile as AttachFileIcon } from '@mui/icons-material';
 
 const NewReimbursementPage: React.FC = () => {
   const navigate = useNavigate();
-  const { categories, fetchCategories } = useCategoryStore();
   const { createReimbursement } = useReimbursementStore();
 
   const [form, setForm] = React.useState({
@@ -22,10 +20,6 @@ const NewReimbursementPage: React.FC = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-
-  React.useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
 
   const handleChange = (key: string, value: any) => setForm(prev => ({ ...prev, [key]: value }));
 
@@ -51,7 +45,7 @@ const NewReimbursementPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title || !form.description || !form.amount || !form.categoryId) {
+    if (!form.title || !form.description || !form.amount) {
       toast.error('Please fill all required fields');
       return;
     }
@@ -62,7 +56,7 @@ const NewReimbursementPage: React.FC = () => {
         title: form.title,
         description: form.description,
         amount: parseInt(form.amount),
-        categoryId: form.categoryId,
+        categoryId: '',
         transactionDate: new Date(form.transactionDate),
         currency: 'IDR',
         attachments: form.attachments,
@@ -136,36 +130,24 @@ const NewReimbursementPage: React.FC = () => {
                 />
               </Box>
 
-              <FormControl fullWidth>
-                <InputLabel>Category *</InputLabel>
-                <Select
-                  value={form.categoryId}
-                  label="Category *"
-                  onChange={(e) => handleChange('categoryId', e.target.value)}
-                >
-                  {categories.filter(c => c.isActive).map(category => (
-                    <MenuItem key={category.id} value={category.id}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: category.color }} />
-                        {category.name}
-                      </Box>
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <TextField
+                fullWidth
+                label="Category"
+                value={form.categoryId}
+                onChange={(e) => handleChange('categoryId', e.target.value)}
+                placeholder="e.g., Office Supplies, Travel, etc."
+              />
 
               <Box>
-                <Typography variant="subtitle2" gutterBottom>Attachments</Typography>
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
                   {form.attachments.map((_url, index) => (
-                    <Chip
-                      key={index}
-                      label={`File ${index + 1}`}
-                      onDelete={() => handleRemoveAttachment(index)}
-                      deleteIcon={<DeleteIcon />}
-                      color="primary"
-                      variant="outlined"
-                    />
+                    <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 0.5, p: 1, border: 1, borderColor: 'divider', borderRadius: 1 }}>
+                      <AttachFileIcon fontSize="small" />
+                      <Typography variant="body2">File {index + 1}</Typography>
+                      <IconButton size="small" onClick={() => handleRemoveAttachment(index)}>
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
                   ))}
                 </Box>
                 <Button

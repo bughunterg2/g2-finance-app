@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -38,7 +38,7 @@ const loginSchema = yup.object({
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { login, isLoading, error, clearError } = useAuthStore();
+  const { login, isLoading, error, clearError, user, isAuthenticated } = useAuthStore();
   const { theme, toggleTheme } = useUIStore();
 
   const {
@@ -54,22 +54,28 @@ const LoginPage: React.FC = () => {
     },
   });
 
+  // Navigate when user becomes authenticated
+  useEffect(() => {
+    if (isAuthenticated && user && !isLoading) {
+      const redirectPath = user.role === 'admin' ? '/admin/dashboard' : '/dashboard';
+      // Navigate immediately when authenticated
+      navigate(redirectPath, { replace: true });
+    }
+  }, [isAuthenticated, user, isLoading, navigate]);
+
   const onSubmit = async (data: any) => {
     try {
       clearError();
       await login(data as LoginData);
-      toast.success('Login successful!', { duration: 3000 });
-      
-      // Navigate based on user role (handled in auth store)
-      const user = useAuthStore.getState().user;
-      if (user) {
-        const redirectPath = user.role === 'admin' ? '/admin/dashboard' : '/dashboard';
-        navigate(redirectPath);
-        // ensure any lingering toasts are cleared after route change
-        setTimeout(() => toast.dismiss(), 0);
-      }
-    } catch (err) {
-      toast.error('Login failed. Please try again.');
+      // Success toast
+      toast.success('Login successful!');
+      // Navigation will happen via useEffect when auth state updates
+    } catch (err: any) {
+      // Error is already handled in authStore and displayed in Alert component
+      // Also show toast for better visibility
+      const errorMessage = err?.message || 'Login failed. Please try again.';
+      toast.error(errorMessage);
+      console.error('Login error:', err);
     }
   };
 

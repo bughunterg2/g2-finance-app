@@ -1,11 +1,21 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { User, LoginData, RegisterData } from '@/types';
+import {
+  loginWithEmail,
+  registerWithEmail,
+  logoutUser,
+  updateUserProfile,
+  getCurrentUser,
+  updateUserPassword,
+  sendPasswordReset,
+} from '@/firebase/auth';
 
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isLoggingIn: boolean; // Flag to prevent race condition with auth state listener
   error: string | null;
 }
 
@@ -14,7 +24,9 @@ interface AuthActions {
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (data: Partial<User>) => Promise<void>;
-  setUser: (user: User | null) => void;
+  updatePassword: (currentPassword: string, newPassword: string) => Promise<void>;
+  sendPasswordResetEmail: (email: string) => Promise<void>;
+  setUser: (user: User | null, skipIfLoggingIn?: boolean) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   clearError: () => void;
@@ -27,102 +39,100 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       user: null,
       isAuthenticated: false,
       isLoading: false,
+      isLoggingIn: false,
       error: null,
 
       // Actions
       login: async (data: LoginData) => {
-        set({ isLoading: true, error: null });
+        set({ isLoading: true, isLoggingIn: true, error: null });
         try {
-          // TODO: Implement Firebase authentication
-          console.log('Login attempt:', data);
+          const user = await loginWithEmail(data);
           
-          // Mock user data for now
-          const isAdmin = /^admin/i.test(data.email);
-          const mockUser: User = {
-            uid: 'mock-uid',
-            email: data.email,
-            name: 'John Doe',
-            role: isAdmin ? 'admin' : 'agent',
-            division: 'Blok M',
-            phoneNumber: '0812-3456-7890',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            isActive: true,
-          };
-          
+          // Set user state immediately after successful login
+          // Set isLoggingIn to false after a small delay to allow navigation to complete
           set({ 
-            user: mockUser, 
+            user, 
             isAuthenticated: true, 
-            isLoading: false 
+            isLoading: false,
+            error: null
           });
-        } catch (error) {
+          
+          // Reset isLoggingIn flag after navigation should have completed
+          setTimeout(() => {
+            set({ isLoggingIn: false });
+          }, 1000);
+        } catch (error: any) {
+          const errorMessage = error instanceof Error ? error.message : 'Login failed';
           set({ 
-            error: error instanceof Error ? error.message : 'Login failed',
-            isLoading: false 
+            error: errorMessage,
+            isLoading: false,
+            isLoggingIn: false,
+            user: null,
+            isAuthenticated: false
           });
+          throw error;
         }
       },
 
       register: async (data: RegisterData) => {
-        set({ isLoading: true, error: null });
+        set({ isLoading: true, isLoggingIn: true, error: null });
         try {
-          // TODO: Implement Firebase registration
-          console.log('Register attempt:', data);
-          
-          // Mock user data for now
-          const mockUser: User = {
-            uid: 'mock-uid',
-            email: data.email,
-            name: data.name,
-            role: data.role,
-            division: data.division,
-            phoneNumber: data.phoneNumber,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            isActive: true,
-          };
+          const user = await registerWithEmail(data);
           
           set({ 
-            user: mockUser, 
+            user, 
             isAuthenticated: true, 
             isLoading: false 
           });
+          
+          // Reset isLoggingIn flag after navigation should have completed
+          setTimeout(() => {
+            set({ isLoggingIn: false });
+          }, 1000);
         } catch (error) {
           set({ 
             error: error instanceof Error ? error.message : 'Registration failed',
-            isLoading: false 
+            isLoading: false,
+            isLoggingIn: false
           });
+          throw error;
         }
       },
 
       logout: async () => {
         set({ isLoading: true });
         try {
-          // TODO: Implement Firebase logout
-          console.log('Logout');
+          await logoutUser();
           
           set({ 
             user: null, 
             isAuthenticated: false, 
-            isLoading: false 
+            isLoading: false,
+            isLoggingIn: false 
           });
         } catch (error) {
           set({ 
             error: error instanceof Error ? error.message : 'Logout failed',
-            isLoading: false 
+            isLoading: false,
+            isLoggingIn: false
           });
+          throw error;
         }
       },
 
       updateProfile: async (data: Partial<User>) => {
         set({ isLoading: true, error: null });
         try {
-          // TODO: Implement Firebase profile update
-          console.log('Update profile:', data);
-          
           const currentUser = get().user;
-          if (currentUser) {
-            const updatedUser = { ...currentUser, ...data, updatedAt: new Date() };
+          if (!currentUser) {
+            throw new Error('No user logged in');
+          }
+
+          await updateUserProfile(currentUser.uid, data);
+          
+          // Refresh user data from Firebase
+          const updatedUser = await getCurrentUser();
+          if (updatedUser) {
             set({ user: updatedUser, isLoading: false });
           }
         } catch (error) {
@@ -130,10 +140,53 @@ export const useAuthStore = create<AuthState & AuthActions>()(
             error: error instanceof Error ? error.message : 'Profile update failed',
             isLoading: false 
           });
+          throw error;
         }
       },
 
-      setUser: (user: User | null) => {
+      updatePassword: async (currentPassword: string, newPassword: string) => {
+        set({ isLoading: true, error: null });
+        try {
+          await updateUserPassword(currentPassword, newPassword);
+          set({ isLoading: false });
+        } catch (error) {
+          set({ 
+            error: error instanceof Error ? error.message : 'Password update failed',
+            isLoading: false 
+          });
+          throw error;
+        }
+      },
+
+      sendPasswordResetEmail: async (email: string) => {
+        set({ isLoading: true, error: null });
+        try {
+          await sendPasswordReset(email);
+          set({ isLoading: false });
+        } catch (error) {
+          set({ 
+            error: error instanceof Error ? error.message : 'Failed to send password reset email',
+            isLoading: false 
+          });
+          throw error;
+        }
+      },
+
+      setUser: (user: User | null, skipIfLoggingIn: boolean = false) => {
+        const state = get();
+        // If login is in progress and we're trying to set user to null, skip it
+        // This prevents auth state listener from clearing user during login process
+        if (skipIfLoggingIn && state.isLoggingIn && !user) {
+          return;
+        }
+        // If login is in progress and we already have a user, don't override it
+        if (skipIfLoggingIn && state.isLoggingIn && state.user && user) {
+          // Only update if it's a different user (shouldn't happen, but safety check)
+          if (state.user.uid !== user.uid) {
+            set({ user, isAuthenticated: !!user });
+          }
+          return;
+        }
         set({ user, isAuthenticated: !!user });
       },
 

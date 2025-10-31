@@ -201,3 +201,170 @@ body {
   background-color: var(--primary-800);
   color: var(--primary-100);
 }
+
+/* React Spreadsheet Theme Support */
+/* Styling untuk react-spreadsheet agar mengikuti tema light/dark */
+.Spreadsheet {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+.Spreadsheet__header {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+.Spreadsheet__header__cell {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-primary) !important;
+  color: var(--text-primary) !important;
+  font-weight: var(--font-weight-semibold) !important;
+}
+
+.Spreadsheet__row {
+  border-color: var(--border-primary) !important;
+}
+
+.Spreadsheet__cell {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+.Spreadsheet__cell input,
+.Spreadsheet__cell textarea {
+  background-color: transparent !important;
+  color: var(--text-primary) !important;
+}
+
+/* Cell yang sedang dalam edit mode - pastikan background gelap di dark mode */
+.Spreadsheet__cell--editing,
+.Spreadsheet__cell:focus-within {
+  background-color: var(--bg-card) !important;
+}
+
+[data-theme="dark"] .Spreadsheet__cell--editing,
+[data-theme="dark"] .Spreadsheet__cell:focus-within {
+  background-color: var(--bg-card) !important;
+}
+
+/* Input dan textarea saat editing - pastikan warna teks benar dan background sesuai */
+.Spreadsheet__cell--editing input,
+.Spreadsheet__cell--editing textarea,
+.Spreadsheet__cell:focus-within input,
+.Spreadsheet__cell:focus-within textarea {
+  background-color: transparent !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .Spreadsheet__cell--editing input,
+[data-theme="dark"] .Spreadsheet__cell--editing textarea,
+[data-theme="dark"] .Spreadsheet__cell:focus-within input,
+[data-theme="dark"] .Spreadsheet__cell:focus-within textarea {
+  background-color: var(--bg-card) !important;
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Selected and active cells */
+/* Menggunakan rgba dengan opacity seperti MUI untuk konsistensi tema */
+.Spreadsheet__cell--selected {
+  background-color: rgba(59, 130, 246, 0.12) !important;
+  border-color: var(--primary-500) !important;
+}
+
+[data-theme="dark"] .Spreadsheet__cell--selected {
+  background-color: rgba(59, 130, 246, 0.24) !important;
+  border-color: var(--primary-400) !important;
+}
+
+.Spreadsheet__cell--active {
+  background-color: rgba(59, 130, 246, 0.16) !important;
+  border-color: var(--primary-500) !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+}
+
+[data-theme="dark"] .Spreadsheet__cell--active {
+  background-color: rgba(59, 130, 246, 0.32) !important;
+  border-color: var(--primary-400) !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Row and column labels */
+.Spreadsheet__label {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-primary) !important;
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .Spreadsheet__label {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-secondary) !important;
+}
+
+/* Input focus state */
+.Spreadsheet__cell input:focus,
+.Spreadsheet__cell textarea:focus {
+  outline: 2px solid var(--border-focus) !important;
+  outline-offset: -2px !important;
+}
+
+/* Memastikan semua input/textarea di Spreadsheet menggunakan warna tema yang benar */
+.Spreadsheet input,
+.Spreadsheet textarea,
+.Spreadsheet input[type="text"],
+.Spreadsheet textarea {
+  color: var(--text-primary) !important;
+  background-color: transparent !important;
+  border: none !important;
+}
+
+[data-theme="dark"] .Spreadsheet input,
+[data-theme="dark"] .Spreadsheet textarea,
+[data-theme="dark"] .Spreadsheet input[type="text"],
+[data-theme="dark"] .Spreadsheet textarea {
+  color: var(--text-primary) !important;
+  background-color: var(--bg-card) !important;
+}
+
+/* Override semua kemungkinan styling untuk input di cell yang sedang editing */
+/* Di light mode, input bisa transparent karena background cell sudah putih */
+.Spreadsheet__cell input,
+.Spreadsheet__cell textarea {
+  background-color: transparent !important;
+  background: transparent !important;
+  color: var(--text-primary) !important;
+}
+
+/* Di dark mode, input harus memiliki background gelap agar teks terlihat */
+[data-theme="dark"] .Spreadsheet__cell input,
+[data-theme="dark"] .Spreadsheet__cell textarea {
+  background-color: var(--bg-card) !important;
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Pastikan input yang sedang focused/active menggunakan background yang benar */
+.Spreadsheet__cell input:focus,
+.Spreadsheet__cell textarea:focus {
+  background-color: transparent !important;
+}
+
+[data-theme="dark"] .Spreadsheet__cell input:focus,
+[data-theme="dark"] .Spreadsheet__cell textarea:focus {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Pastikan cell yang mengandung input tetap menggunakan background yang benar */
+.Spreadsheet__cell:has(input),
+.Spreadsheet__cell:has(textarea) {
+  background-color: var(--bg-card) !important;
+}
+
+[data-theme="dark"] .Spreadsheet__cell:has(input),
+[data-theme="dark"] .Spreadsheet__cell:has(textarea) {
+  background-color: var(--bg-card) !important;
+}

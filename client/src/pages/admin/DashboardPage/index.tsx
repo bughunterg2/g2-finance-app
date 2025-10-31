@@ -123,7 +123,7 @@ const AdminDashboardPage: React.FC = () => {
   }, [tables, dataByMonth]);
 
   // Filter tables based on selectedTables
-  const filteredTables = useMemo(() => {
+  const filteredTables: SpreadsheetTableSchema[] = useMemo(() => {
     if (selectedTables.length === 0) return tables;
     return tables.filter(t => selectedTables.includes(t.id));
   }, [tables, selectedTables]);
@@ -134,10 +134,10 @@ const AdminDashboardPage: React.FC = () => {
     let totalRows = 0;
     let totalNumericColumns = 0;
     const activeMonths = new Set<string>();
-    let latestTable: SpreadsheetTableSchema | null = null;
-    let latestUpdate = 0;
+    let latestTable: SpreadsheetTableSchema | null = filteredTables.length > 0 ? filteredTables[0] : null;
+    let latestUpdate = latestTable ? new Date(latestTable.updatedAt).getTime() : 0;
 
-    filteredTables.forEach(table => {
+    filteredTables.forEach((table: SpreadsheetTableSchema) => {
       const numericCols = table.columns.filter(c => c.type === 'number');
       totalNumericColumns += numericCols.length;
       
@@ -156,12 +156,14 @@ const AdminDashboardPage: React.FC = () => {
       }
     });
 
+    const latestTableTitle: string = latestTable?.title || 'N/A';
+
     return {
       totalTables,
       totalRows,
       totalNumericColumns,
       activeMonthsCount: activeMonths.size,
-      latestTable: latestTable?.title || 'N/A',
+      latestTable: latestTableTitle,
     };
   }, [filteredTables, dataByMonth, selectedMonth]);
 

@@ -177,10 +177,7 @@ const Sidebar: React.FC = () => {
     return new URLSearchParams(path.substring(idx + 1));
   };
 
-  const isActivePath = (path: string) => {
-    const [basePath] = path.split('?');
-    return location.pathname === basePath || location.pathname.startsWith(basePath);
-  };
+  // removed unused non-strict path matcher to satisfy TS6133
 
   const isActivePathStrict = (path: string) => {
     const [basePath] = path.split('?');

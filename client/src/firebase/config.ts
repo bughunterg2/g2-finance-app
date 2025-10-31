@@ -10,16 +10,30 @@ import type { Firestore } from 'firebase/firestore';
 import type { FirebaseStorage } from 'firebase/storage';
 import type { Analytics } from 'firebase/analytics';
 
-// Your web app's Firebase configuration
+// Your web app's Firebase configuration (loaded from environment variables)
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'AIzaSyD79nqqJ8Q_GufyG9PFVxHRcQ2d6XGti9A',
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'g2-finance-app.firebaseapp.com',
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'g2-finance-app',
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'g2-finance-app.firebasestorage.app',
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '266565170537',
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:266565170537:web:8ed4d9ffdb9fd60b50f9f8',
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || 'G-9NLM31DCSP',
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
+
+// Basic runtime validation to surface misconfiguration early
+if (
+  !firebaseConfig.apiKey ||
+  !firebaseConfig.authDomain ||
+  !firebaseConfig.projectId ||
+  !firebaseConfig.storageBucket ||
+  !firebaseConfig.messagingSenderId ||
+  !firebaseConfig.appId
+) {
+  throw new Error(
+    'Missing Firebase environment variables. Please set VITE_FIREBASE_* in your .env files.'
+  );
+}
 
 // Initialize Firebase
 let app: FirebaseApp;

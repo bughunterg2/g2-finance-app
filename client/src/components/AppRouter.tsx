@@ -161,7 +161,7 @@ const AppRouter: React.FC = () => {
             path="/admin/dashboard"
             element={
               <ProtectedRoute roles={['admin']}>
-                <AppLayout title="Admin Dashboard">
+                <AppLayout title="Dashboard">
                   <AdminDashboardPage />
                 </AppLayout>
               </ProtectedRoute>

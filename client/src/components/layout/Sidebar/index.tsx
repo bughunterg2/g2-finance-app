@@ -75,7 +75,6 @@ const Sidebar: React.FC = () => {
           icon: <DashboardIcon />,
           path: '/admin/dashboard',
         },
-        
         {
           id: 'spreadsheets',
           label: 'Spreadsheets',

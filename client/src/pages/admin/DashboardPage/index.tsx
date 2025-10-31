@@ -25,8 +25,6 @@ import {
 } from '@mui/material';
 import {
   TableChart as TableChartIcon,
-  BarChart as BarChartIcon,
-  TrendingUp as TrendingUpIcon,
   Assessment as AssessmentIcon,
   Refresh as RefreshIcon,
   ExpandMore as ExpandMoreIcon,
@@ -36,7 +34,7 @@ import {
   List as ListIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { Line, Bar, Doughnut } from 'react-chartjs-2';
+import { Line, Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -50,11 +48,10 @@ import {
 } from 'chart.js';
 import PageHeader from '@/components/layout/PageHeader';
 import StatCard from '@/components/ui/StatCard';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import EmptyState from '@/components/ui/EmptyState';
 import { useSpreadsheetStore } from '@/stores/spreadsheetStore';
 import { useAuthStore } from '@/stores/authStore';
-import { formatCurrency } from '@/utils/format';
+import type { SpreadsheetTableSchema } from '@/stores/spreadsheetStore';
 
 ChartJS.register(
   CategoryScale,
@@ -94,7 +91,7 @@ const formatMonthLabel = (monthKey: string) => {
 const AdminDashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  const { tables, dataByMonth, monthMetaByTable, getRows, getTotals } = useSpreadsheetStore();
+  const { tables, dataByMonth } = useSpreadsheetStore();
   const [selectedMonth, setSelectedMonth] = useState<string>(''); // Empty string means "all months"
   const [selectedTables, setSelectedTables] = useState<string[]>([]);
   const [expandedTable, setExpandedTable] = useState<string | false>(false);
@@ -137,7 +134,7 @@ const AdminDashboardPage: React.FC = () => {
     let totalRows = 0;
     let totalNumericColumns = 0;
     const activeMonths = new Set<string>();
-    let latestTable = null;
+    let latestTable: SpreadsheetTableSchema | null = null;
     let latestUpdate = 0;
 
     filteredTables.forEach(table => {

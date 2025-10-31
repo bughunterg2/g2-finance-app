@@ -76,13 +76,38 @@ function formatDisplayValue(value: any, type: 'text' | 'number' | 'date' | 'sele
 const SpreadsheetEditorPage: React.FC = () => {
   const { id } = useParams();
   const routeKey = id as string;
-  const { tables, getRows, addRow, addColumn, setActiveMonth, activeMonthByTable, getTotals, renameTable, setRows, setColumns, getEditMode, setEditMode } = useSpreadsheetStore();
+  const { tables, getRows, addRow, addColumn, setActiveMonth, activeMonthByTable, getTotals, renameTable, setRows, setColumns, getEditMode, setEditMode, dataByMonth } = useSpreadsheetStore();
   const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   const table = tables.find(t => t.id === routeKey) || tables.find(t => slugify(t.title) === routeKey);
   const tableId = table?.id as string;
 
   const month = table ? activeMonthByTable[tableId] : undefined;
-  const monthOptions = React.useMemo(() => monthKeyOptions(), []);
+  
+  // Combine months from actual data and monthKeyOptions, then deduplicate and sort
+  const monthOptions = React.useMemo(() => {
+    const allMonths = new Set<string>();
+    
+    // Add months from actual data for this table
+    if (tableId && dataByMonth[tableId]) {
+      Object.keys(dataByMonth[tableId]).forEach(monthKey => {
+        allMonths.add(monthKey);
+      });
+    }
+    
+    // Add months from monthKeyOptions (last 12 months)
+    monthKeyOptions().forEach(monthKey => {
+      allMonths.add(monthKey);
+    });
+    
+    // Convert to array and sort descending (newest first)
+    const monthArray = Array.from(allMonths).sort((a, b) => {
+      // Compare as strings works because format is YYYY-MM
+      return b.localeCompare(a);
+    });
+    
+    return monthArray;
+  }, [tableId, dataByMonth]);
+  
   const selectedMonth = month || monthOptions[0];
   React.useEffect(() => {
     if (!month) setActiveMonth(tableId, selectedMonth);
